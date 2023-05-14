@@ -136,9 +136,9 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   Widget menuStack(BuildContext context, Menu menu) => Container(
         decoration: BoxDecoration(
-            border: new Border.all(color: Theme.of(context).primaryColor),
-            borderRadius: BorderRadius.all(Radius.circular(4))),
-        padding: EdgeInsets.all(8),
+            border: Border.all(color: Theme.of(context).primaryColor),
+            borderRadius: const BorderRadius.all(Radius.circular(4))),
+        padding: const EdgeInsets.all(8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
@@ -152,7 +152,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
               padding: const EdgeInsets.all(8.0),
               child: Text(
                 menu.title,
-                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
               ),
             )
           ],

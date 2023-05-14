@@ -30,3 +30,5 @@ const BUTTON_PROCEED = "PROCEED";
 const BUTTON_GOAHEAD = "GO AHEAD";
 
 const BUTTON_LOGIN = "Login";
+
+const EVENT_LOG_OUT = 2;

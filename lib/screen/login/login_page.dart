@@ -1,6 +1,10 @@
 import 'dart:async';
+import 'package:cherry_toast/cherry_toast.dart';
+import 'package:cherry_toast/resources/arrays.dart';
 import 'package:flutter/material.dart';
 import 'package:medical_bmi/screen/home/home_page.dart';
+import 'package:stacked/stacked.dart';
+import '../../api/main_viewmodel.dart';
 import '../../utility/app_constant.dart';
 import '../../widget/circular_reveal.dart';
 import '../../widget/rounded_button.dart';
@@ -51,23 +55,47 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
     final TextTheme textTheme = Theme.of(context).textTheme;
-    return Scaffold(
-      body: Stack(
-        children: <Widget>[
-          _buildContent(size, textTheme),
-          Center(
-            child: _fraction > 0
-                ? CustomPaint(
-                    painter: RevealProgressButtonPainter(_fraction, MediaQuery.of(context).size),
-                  )
-                : Offstage(),
+    return ViewModelBuilder<MainViewModel>.reactive(
+      viewModelBuilder: () {
+        return MainViewModel();
+      },
+      builder: (context, viewModel, child) {
+        return Scaffold(
+          body: Stack(
+            children: <Widget>[
+              _buildContent(viewModel, size, textTheme),
+              Center(
+                child: _fraction > 0
+                    ? CustomPaint(
+                        painter: RevealProgressButtonPainter(_fraction, MediaQuery.of(context).size),
+                      )
+                    : Offstage(),
+              ),
+              Center(
+                child: _fraction == 1 ? CircularProgressIndicator() : Offstage(),
+              )
+            ],
           ),
-          Center(
-            child: _fraction == 1 ? CircularProgressIndicator() : Offstage(),
-          )
-        ],
-      ),
-      resizeToAvoidBottomInset: false,
+          resizeToAvoidBottomInset: false,
+        );
+      },
+      onViewModelReady: (viewModel) {
+        viewModel.errorData.listen((event) {
+          CherryToast.error(
+            title: const Text('Error'),
+            enableIconAnimation: false,
+            displayTitle: false,
+            description: Text(event),
+            animationType: AnimationType.fromTop,
+            animationDuration: const Duration(milliseconds: 1000),
+            autoDismiss: true,
+          ).show(context);
+        });
+
+        viewModel.loginConfirmData.listen((event) async {
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
+        });
+      },
     );
   }
 
@@ -90,15 +118,15 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     });
   }
 
-  Widget _buildContent(Size size, TextTheme textTheme) => Container(
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
+  Widget _buildContent(MainViewModel viewModel, Size size, TextTheme textTheme) => Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
             begin: FractionalOffset.topCenter,
             end: FractionalOffset.bottomCenter,
             colors: <Color>[
-              const Color(0xFF7BDDB1),
-              const Color(0xFF377885),
-              const Color(0xFF265F7A),
+              Color(0xFF7BDDB1),
+              Color(0xFF377885),
+              Color(0xFF265F7A),
             ],
           ),
         ),
@@ -109,7 +137,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
             _buildBackgroundTop(),
             _buildBackgroundBottom(),
             _buildBackgroundBottom2(),
-            _buildForm(size, textTheme)
+            _buildForm(viewModel, size, textTheme)
           ],
         ),
       );
@@ -127,14 +155,14 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         transform: Matrix4.translationValues(0, -enterAnimation.backgroundTranslation.value, 0),
         child: TrapezoidDownCutSmall(
           child: Container(
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
                 begin: FractionalOffset.topRight,
                 end: FractionalOffset.bottomRight,
                 colors: <Color>[
-                  const Color(0xFF64BCA2),
-                  const Color(0xFF468E8E),
-                  const Color(0xFF3C7E88),
+                  Color(0xFF64BCA2),
+                  Color(0xFF468E8E),
+                  Color(0xFF3C7E88),
                 ],
               ),
             ),
@@ -146,13 +174,13 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         transform: Matrix4.translationValues(0, enterAnimation.backgroundTranslation.value, 0),
         child: TrapezoidUpCut(
           child: Container(
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
                 begin: FractionalOffset.topCenter,
                 end: FractionalOffset.bottomCenter,
                 colors: <Color>[
-                  const Color(0xFF468E8E),
-                  const Color(0xFF3C7E88),
+                  Color(0xFF468E8E),
+                  Color(0xFF3C7E88),
                 ],
               ),
             ),
@@ -169,7 +197,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         ),
       );
 
-  _buildForm(Size size, TextTheme textTheme) => Positioned(
+  _buildForm(MainViewModel viewmodel, Size size, TextTheme textTheme) => Positioned(
       top: size.height * 0.2,
       left: size.width * 0.08,
       right: size.width * 0.35,
@@ -192,7 +220,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                 height: size.height * 0.05,
               ),
               _buildTextFormUsername(textTheme),
-              SizedBox(
+              const SizedBox(
                 height: 8,
               ),
               _buildTextFormPassword(textTheme),
@@ -201,22 +229,39 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
               ),
               Transform(
                   transform: Matrix4.translationValues(-enterAnimation.buttontranslation.value, 0, 0),
-                  child: Container(
-                    height: 48.0,
-                    width: MediaQuery.of(context).size.height * 0.2,
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).primaryColor,
-                      borderRadius: new BorderRadius.circular(30.0),
-                    ),
-                    child: InkWell(
-                        onTap: () => Navigator.pushReplacement(
-                            context, MaterialPageRoute(builder: (context) => HomePage())),
-                        child: Center(
-                          child: Text("Login",
-                              style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.white)),
-                        )),
-                  )
-                  )
+                  child: (!viewmodel.progressData)
+                      ? Container(
+                          height: 48.0,
+                          width: MediaQuery.of(context).size.height * 0.2,
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).primaryColor,
+                            borderRadius: new BorderRadius.circular(30.0),
+                          ),
+                          child: InkWell(
+                              onTap: () async {
+                                viewmodel.login(
+                                    userNameController.text.toString(), passwordController.text.toString());
+                              },
+                              child: Center(
+                                child: Text("Login",
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleSmall
+                                        ?.copyWith(color: Colors.white)),
+                              )),
+                        )
+                      : Container(
+                          height: 48.0,
+                          padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 6),
+                          width: MediaQuery.of(context).size.height * 0.2,
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).primaryColor,
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
+                          child: const CircularProgressIndicator(
+                            color: Colors.white,
+                          ),
+                        ))
             ],
           ),
         ),
@@ -227,12 +272,12 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
       opacity: enterAnimation.userNameOpacity,
       child: TextFormField(
         style: textTheme.titleSmall?.copyWith(color: Colors.black87),
-        decoration: new InputDecoration(
-          border: UnderlineInputBorder(),
+        decoration: InputDecoration(
+          border: const UnderlineInputBorder(),
           labelText: PHONE_AUTH_HINT,
           labelStyle: textTheme.caption?.copyWith(color: Theme.of(context).primaryColor),
           contentPadding: EdgeInsets.zero,
-          suffixIcon: Icon(
+          suffixIcon: const Icon(
             Icons.person_outline,
             color: Colors.grey,
           ),
@@ -253,11 +298,11 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
       opacity: enterAnimation.passowrdOpacity,
       child: TextFormField(
         style: textTheme.titleSmall?.copyWith(color: Colors.black87),
-        decoration: new InputDecoration(
+        decoration: InputDecoration(
           labelText: PASSWORD_AUTH_HINT,
           labelStyle: textTheme.bodySmall?.copyWith(color: Theme.of(context).primaryColor),
           contentPadding: const EdgeInsets.all(0.0),
-          suffixIcon: Icon(Icons.lock_outline, color: Colors.grey),
+          suffixIcon: const Icon(Icons.lock_outline, color: Colors.grey),
         ),
         keyboardType: TextInputType.text,
         controller: passwordController,
