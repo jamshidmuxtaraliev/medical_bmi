@@ -8,26 +8,18 @@ import '../main.dart';
 import '../models/base_model.dart';
 import '../models/event_model.dart';
 import '../models/login_response.dart';
+import '../models/news_model.dart';
 import '../utility/event_bus_provider.dart';
 import '../utility/pref_utils.dart';
 
 class ApiService {
   final dio = Dio();
-  final BASE_URL = "http://91.213.99.105:3010/api/v1/users/";
 
   ApiService() {
     dio.options.baseUrl = BASE_URL;
-    // dio.options.baseUrl = "http://192.168.1.143:8080/Officebase/hs/BDM/";
     dio.options.headers['content-Type'] = 'application/json';
-//    dio.options.headers["Authorization"] = "Bearer ${PrefUtils.getToken()}";
-//     String basicAuth =
-//         'Basic ${base64Encode(utf8.encode("${PrefUtils.getBdmItems()?.mobile_username}:${PrefUtils.getBdmItems()?.mobile_password}"))}';
-//     dio.options.headers["Authorization"] = basicAuth;
     dio.options.headers.addAll({
-      // 'Authorization': 'Basic ' +
-      //     base64Encode(utf8.encode(
-      //         '${PrefUtils.getBdmItems()?.mobile_username ?? ""}:${PrefUtils.getBdmItems()?.mobile_password ?? ""}')),
-      'token': PrefUtils.getToken(),
+    'token': PrefUtils.getToken(),
       'mobile': 1,
       'device': Platform.operatingSystem,
       'lang': PrefUtils.getLang(),
@@ -76,29 +68,12 @@ class ApiService {
   Future<LoginResponse?> login(
       String username, String password, StreamController<String> errorStream) async {
     try {
-      final response = await dio.post("login",
+      final response = await dio.post("users/login",
           //queryParameters: {"phone": phone}
           data: jsonEncode({"username": username, "password": password}));
       final baseData = wrapResponse(response);
       if (baseData.success) {
         return LoginResponse.fromJson(baseData.data);
-      } else {
-        errorStream.sink.add(baseData.message ?? "Error");
-      }
-    } on DioError catch (e) {
-      errorStream.sink.add(wrapError(e));
-    }
-    return null;
-  }
-
-  Future<bool?> checkPhone(
-      String phone, String sendType, String country_code, StreamController<String> errorStream) async {
-    try {
-      final response = await dio.post("checkPhone",
-          data: jsonEncode({"phone": phone, "type_send": sendType, "country_code": country_code}));
-      final baseData = wrapResponse(response);
-      if (!baseData.success) {
-        return baseData.data["isRegistered"];
       } else {
         errorStream.sink.add(baseData.message ?? "Error");
       }
@@ -183,21 +158,21 @@ class ApiService {
 //     return [];
 //   }
 //
-//   Future<List<NewsModel>> getNews(StreamController<String> errorStream) async {
-//     try {
-//       final response = await dio.get("getNews", queryParameters: {});
-//       final baseData = wrapResponse(response);
-//       if (!baseData.error) {
-//         return (baseData.data as List<dynamic>).map((json) => NewsModel.fromJson(json)).toList();
-//       } else {
-//         errorStream.sink.add(baseData.message ?? "Error");
-//       }
-//     } on DioError catch (e) {
-//       errorStream.sink.add(wrapError(e).replaceAll("isti.uz", "MAINSERVER"));
-//     }
-//     return [];
-//   }
-//
+  Future<List<NewsModel>> getNews(StreamController<String> errorStream) async {
+    try {
+      final response = await dio.get("news", queryParameters: {});
+      final baseData = wrapResponse(response);
+      if (baseData.success) {
+        return (baseData.data as List<dynamic>).map((json) => NewsModel.fromJson(json)).toList();
+      } else {
+        errorStream.sink.add(baseData.message ?? "Error");
+      }
+    } on DioError catch (e) {
+      errorStream.sink.add(wrapError(e));
+    }
+    return [];
+  }
+
 //   Future<List<RateModel>> getRates(StreamController<String> errorStream) async {
 //     try {
 //       final response = await dio.get("getRates", queryParameters: {});

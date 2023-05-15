@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:medical_bmi/screen/news/news_screen.dart';
+import 'package:medical_bmi/screen/reports/report_screen.dart';
+import 'package:medical_bmi/utility/pref_utils.dart';
 import 'home_animation.dart';
 
 class HomePage extends StatefulWidget {
@@ -57,9 +60,9 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
         child: FadeTransition(
           opacity: enterAnimation.fadeTranslation,
           child: Container(
-              decoration: BoxDecoration(
-            image: new DecorationImage(
-              image: new ExactAssetImage('assets/images/doctor.jpg'),
+              decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: ExactAssetImage('assets/images/doctor.jpg'),
               fit: BoxFit.cover,
             ),
           )),
@@ -74,14 +77,14 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
         child: FadeTransition(
           opacity: enterAnimation.fadeTranslation,
           child: Container(
-              decoration: BoxDecoration(
-            gradient: const LinearGradient(
+              decoration: const BoxDecoration(
+            gradient: LinearGradient(
               begin: FractionalOffset.topCenter,
               end: FractionalOffset.bottomCenter,
               colors: <Color>[
-                const Color(0xFF5DB09E),
-                const Color(0xFF40858B),
-                const Color(0xFF042C63),
+                Color(0xFF5DB09E),
+                Color(0xFF40858B),
+                Color(0xFF042C63),
               ],
             ),
           )),
@@ -103,15 +106,15 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      "Hello Nasrin",
-                      style: textTheme.caption?.copyWith(color: Colors.black, fontWeight: FontWeight.w300),
+                      "Hello ${PrefUtils.getUser()?.username}",
+                      style: textTheme.bodySmall?.copyWith(color: Colors.black, fontWeight: FontWeight.w300),
                     ),
                     Text(
                       "Welcome",
                       style:
                           textTheme.titleMedium?.copyWith(color: Colors.black, fontWeight: FontWeight.w700),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 16,
                     ),
                     Expanded(
@@ -134,45 +137,50 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
         ),
       );
 
-  Widget menuStack(BuildContext context, Menu menu) => Container(
-        decoration: BoxDecoration(
-            border: Border.all(color: Theme.of(context).primaryColor),
-            borderRadius: const BorderRadius.all(Radius.circular(4))),
-        padding: const EdgeInsets.all(8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Expanded(
-                child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Image.asset(menu.image),
-            )),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                menu.title,
-                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-              ),
-            )
-          ],
+  Widget menuStack(BuildContext context, Menu menu) => InkWell(
+        child: Container(
+          decoration: BoxDecoration(
+              border: Border.all(color: Theme.of(context).primaryColor),
+              borderRadius: const BorderRadius.all(Radius.circular(4))),
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Expanded(
+                  child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Image.asset(menu.image),
+              )),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  menu.title,
+                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+                ),
+              )
+            ],
+          ),
         ),
+    onTap: (){
+          Navigator.push(context, MaterialPageRoute(builder: (context)=>
+          (menu.clickType ==1) ? NewsScreen() : ReportScreen()
+          ));
+    },
       );
 }
 
 class Menu {
   String title;
   String image;
+  int clickType;
 
-  Menu({
-    required this.title,
-    required this.image,
-  });
+  Menu({required this.title, required this.image, required this.clickType});
 }
 
 final menuItems = <Menu>[
-  Menu(title: "Book an appointment", image: 'assets/images/appointment.png'),
-  Menu(title: "Your appointment", image: 'assets/images/reminder.png'),
-  Menu(title: "Medical report", image: 'assets/images/reports.png'),
-  Menu(title: "Set medical reminder", image: 'assets/images/yourappointments.png'),
+  Menu(title: "Yangiliklar va elonlar", image: 'assets/images/appointment.png', clickType: 1),
+  Menu(title: "Your appointment", image: 'assets/images/reminder.png', clickType: 2),
+  Menu(title: "Medical report", image: 'assets/images/reports.png', clickType: 3),
+  Menu(title: "Set medical reminder", image: 'assets/images/yourappointments.png', clickType: 4),
 ];

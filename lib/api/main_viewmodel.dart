@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:medical_bmi/models/news_model.dart';
 import 'package:stacked/stacked.dart';
 import '../api/api_service.dart';
 import '../models/login_response.dart';
@@ -27,6 +28,7 @@ class MainViewModel extends BaseViewModel {
   var progressData = false;
   var progressProjectById = false;
 
+  List<NewsModel> newsList = [];
   // List<OfferModel> offerList = [];
   // List<ProjectModel>? myProjectsList;
 
@@ -40,6 +42,16 @@ class MainViewModel extends BaseViewModel {
       PrefUtils.setUser(data);
       _loginConfirmStream.sink.add(data);
     }
+    progressData = false;
+    notifyListeners();
+  }
+
+  // //news
+  void getNews() async {
+    progressData = true;
+    notifyListeners();
+    final data = await api.getNews(_errorStream);
+    newsList = data;
     progressData = false;
     notifyListeners();
   }
@@ -81,15 +93,7 @@ class MainViewModel extends BaseViewModel {
 //     notifyListeners();
 //   }
 //
-// //news
-//   void getNews() async {
-//     progressData = true;
-//     notifyListeners();
-//     final data = await api.getNews(_errorStream);
-//     newsList = data;
-//     progressData = false;
-//     notifyListeners();
-//   }
+
 //
 // //rates
 //   void getRates() async {
