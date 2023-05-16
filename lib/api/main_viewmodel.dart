@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:medical_bmi/models/news_model.dart';
+import 'package:medical_bmi/models/report_model.dart';
 import 'package:stacked/stacked.dart';
 import '../api/api_service.dart';
 import '../models/login_response.dart';
@@ -21,6 +22,12 @@ class MainViewModel extends BaseViewModel {
   }
 
 
+  StreamController<bool> _sendReportStream = StreamController();
+  Stream<bool> get sendReportData {
+    return _sendReportStream.stream;
+  }
+
+
   Stream<String> get errorData {
     return _errorStream.stream;
   }
@@ -29,6 +36,7 @@ class MainViewModel extends BaseViewModel {
   var progressProjectById = false;
 
   List<NewsModel> newsList = [];
+  List<ReportModel> reportList = [];
   // List<OfferModel> offerList = [];
   // List<ProjectModel>? myProjectsList;
 
@@ -54,6 +62,27 @@ class MainViewModel extends BaseViewModel {
     newsList = data;
     progressData = false;
     notifyListeners();
+  }
+
+  void getMyReports() async {
+    progressData = true;
+    notifyListeners();
+    final data = await api.getMyReports(_errorStream);
+    reportList = data;
+    progressData = false;
+    notifyListeners();
+  }
+
+  void sendReport(
+      String title, String text, int report_id, String image, ) async {
+    progressData = true;
+    notifyListeners();
+    final data = await api.sendReport(title, text, report_id, image, _errorStream);
+    progressData = false;
+    notifyListeners();
+    if (data != null) {
+      _sendReportStream.sink.add(data);
+    }
   }
   //
   //

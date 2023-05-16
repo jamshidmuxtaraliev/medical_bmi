@@ -5,6 +5,8 @@ import 'package:medical_bmi/api/main_viewmodel.dart';
 import 'package:medical_bmi/screen/news/news_item_view.dart';
 import 'package:stacked/stacked.dart';
 
+import '../../utility/color_utility.dart';
+
 class NewsScreen extends StatefulWidget {
   const NewsScreen({Key? key}) : super(key: key);
 
@@ -58,16 +60,6 @@ class _NewsScreenState extends State<NewsScreen> {
           ).show(context);
         });
       },
-    );
-  }
-
-  Widget showMyProgress(){
-    return Container(
-      color: Colors.lightBlueAccent.withOpacity(0.3),
-      width: double.infinity,
-      height: double.infinity,
-      child: const Center(
-        child: CircularProgressIndicator(),),
     );
   }
 }

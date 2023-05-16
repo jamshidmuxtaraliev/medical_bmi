@@ -9,6 +9,7 @@ import '../models/base_model.dart';
 import '../models/event_model.dart';
 import '../models/login_response.dart';
 import '../models/news_model.dart';
+import '../models/report_model.dart';
 import '../utility/event_bus_provider.dart';
 import '../utility/pref_utils.dart';
 
@@ -142,6 +143,57 @@ class ApiService {
     }
     return null;
   }
+
+  Future<List<NewsModel>> getNews(StreamController<String> errorStream) async {
+    try {
+      final response = await dio.get("news", queryParameters: {});
+      final baseData = wrapResponse(response);
+      if (baseData.success) {
+        return (baseData.data as List<dynamic>).map((json) => NewsModel.fromJson(json)).toList();
+      } else {
+        errorStream.sink.add(baseData.message ?? "Error");
+      }
+    } on DioError catch (e) {
+      errorStream.sink.add(wrapError(e));
+    }
+    return [];
+  }
+
+  Future<List<ReportModel>> getMyReports(StreamController<String> errorStream) async {
+    try {
+      final response = await dio.get("report");
+      final baseData = wrapResponse(response);
+      if (baseData.success) {
+        return (baseData.data as List<dynamic>).map((json) => ReportModel.fromJson(json)).toList();
+      } else {
+        errorStream.sink.add(baseData.message ?? "Error");
+      }
+    } on DioError catch (e) {
+      errorStream.sink.add(wrapError(e));
+    }
+    return [];
+  }
+
+  Future<bool?> sendReport(String title, String text, int report_id, String image, StreamController<String> errorStream) async {
+    try {
+      final response = await dio.post("report/table",
+          data: FormData.fromMap({
+            "title": title,
+            "text": text,
+            "report_id": report_id,
+            if (image.isNotEmpty) "imgage": await MultipartFile.fromFile(image, filename: image.split('/').last),
+          }));
+      final baseData = wrapResponse(response);
+      if (baseData.success) {
+        return true;
+      } else {
+        errorStream.sink.add(baseData.message ?? "Error");
+      }
+    } on DioError catch (e) {
+      errorStream.sink.add(wrapError(e));
+    }
+    return false;
+  }
 //
 //   Future<List<OfferModel>> getOfferList(StreamController<String> errorStream) async {
 //     try {
@@ -158,20 +210,6 @@ class ApiService {
 //     return [];
 //   }
 //
-  Future<List<NewsModel>> getNews(StreamController<String> errorStream) async {
-    try {
-      final response = await dio.get("news", queryParameters: {});
-      final baseData = wrapResponse(response);
-      if (baseData.success) {
-        return (baseData.data as List<dynamic>).map((json) => NewsModel.fromJson(json)).toList();
-      } else {
-        errorStream.sink.add(baseData.message ?? "Error");
-      }
-    } on DioError catch (e) {
-      errorStream.sink.add(wrapError(e));
-    }
-    return [];
-  }
 
 //   Future<List<RateModel>> getRates(StreamController<String> errorStream) async {
 //     try {

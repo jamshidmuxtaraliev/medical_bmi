@@ -25,7 +25,7 @@ const COLOR_TWITTER = "#00C7FF";
 const COLOR_GOOGLE = "#FC5345";
 
 final BASE_URL = "http://91.213.99.105:3010/api/v1/";
-const IMAGE_BASE_URL = "http://91.213.99.105:3010/api/images/";
+const IMAGE_BASE_URL = "http://91.213.99.105:3010/api/image/";
 
 const BUTTON_PROCEED = "PROCEED";
 const BUTTON_GOAHEAD = "GO AHEAD";

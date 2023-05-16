@@ -1,3 +1,6 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+
 int getColorHexFromStr(String colorStr) {
   colorStr = "FF" + colorStr;
   colorStr = colorStr.replaceAll("#", "");
@@ -18,4 +21,14 @@ int getColorHexFromStr(String colorStr) {
     }
   }
   return val;
+}
+
+Widget showMyProgress(){
+  return Container(
+    color: Colors.lightBlueAccent.withOpacity(0.3),
+    width: double.infinity,
+    height: double.infinity,
+    child: const Center(
+      child: CircularProgressIndicator(),),
+  );
 }
