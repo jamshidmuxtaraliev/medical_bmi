@@ -181,7 +181,7 @@ class ApiService {
             "title": title,
             "text": text,
             "report_id": report_id,
-            if (image.isNotEmpty) "imgage": await MultipartFile.fromFile(image, filename: image.split('/').last),
+            if (image.isNotEmpty) "image": await MultipartFile.fromFile(image, filename: image.split('/').last),
           }));
       final baseData = wrapResponse(response);
       if (baseData.success) {
