@@ -32,3 +32,23 @@ Widget showMyProgress(){
       child: CircularProgressIndicator(),),
   );
 }
+
+
+Widget dialogRoundedShapeB(){
+  return Container(
+    width: 80,
+    height: 10,
+    decoration: const BoxDecoration(
+      borderRadius: BorderRadius.all(Radius.circular(12)),
+      boxShadow: [
+        BoxShadow(
+            offset: Offset(0, 0), blurRadius: 1.5, spreadRadius: 1.5, color: Colors.grey)
+      ],
+      color: Colors.white70,
+    ),
+  );
+}
+
+void startScreenF(BuildContext context, StatefulWidget stl) {
+  Navigator.push(context, MaterialPageRoute(builder: (context) => stl));
+}

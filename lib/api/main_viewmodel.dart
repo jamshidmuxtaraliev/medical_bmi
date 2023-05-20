@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:medical_bmi/api/covidAPI.dart';
+import 'package:medical_bmi/models/clinica_location_model.dart';
 import 'package:medical_bmi/models/news_model.dart';
 import 'package:medical_bmi/models/report_model.dart';
 import 'package:stacked/stacked.dart';
@@ -6,27 +8,37 @@ import '../api/api_service.dart';
 import '../models/login_response.dart';
 import '../utility/pref_utils.dart';
 
-
 class MainViewModel extends BaseViewModel {
   final api = ApiService();
   final StreamController<String> _errorStream = StreamController();
 
   final StreamController<LoginResponse> _loginConfirmStream = StreamController();
+
   Stream<LoginResponse> get loginConfirmData {
     return _loginConfirmStream.stream;
   }
 
   final StreamController<LoginResponse> _registrationResponseStream = StreamController();
+
   Stream<LoginResponse> get registrationResponseData {
     return _registrationResponseStream.stream;
   }
 
+  StreamController<LoginResponse> _userStream = StreamController();
+  Stream<LoginResponse> get getUserData {
+    return _userStream.stream;
+  }
+
+  StreamController<List<ClinicaLocationModel>> _locationListStream = StreamController();
+  Stream<List<ClinicaLocationModel>> get locationListStream {
+    return _locationListStream.stream;
+  }
 
   StreamController<bool> _sendReportStream = StreamController();
+
   Stream<bool> get sendReportData {
     return _sendReportStream.stream;
   }
-
 
   Stream<String> get errorData {
     return _errorStream.stream;
@@ -36,22 +48,64 @@ class MainViewModel extends BaseViewModel {
   var progressProjectById = false;
 
   List<NewsModel> newsList = [];
+  List<ClinicaLocationModel> clinicaList = [];
   List<ReportModel> reportList = [];
+
   // List<OfferModel> offerList = [];
   // List<ProjectModel>? myProjectsList;
-
 
   void login(String username, String password) async {
     progressData = true;
     notifyListeners();
     final data = await api.login(username, password, _errorStream);
     if (data != null) {
-      PrefUtils.setToken(data.token??"");
-      PrefUtils.setUser(data);
+      PrefUtils.setToken(data.token ?? "");
+      // PrefUtils.setUser(data);
       _loginConfirmStream.sink.add(data);
     }
     progressData = false;
     notifyListeners();
+  }
+
+  // void getCovid() async {
+  //   progressData = true;
+  //   notifyListeners();
+  //   final data = await api.getCovidApi( _errorStream);
+  //   if (data != null) {
+  //     _loginConfirmStream.sink.add(data);
+  //   }
+  //   progressData = false;
+  //   notifyListeners();
+  // }
+
+  void updateUser(
+    String username,
+    String password,
+    String fullname,
+    String phone_number,
+    String email,
+    String bio,
+  ) async {
+    progressData = true;
+    notifyListeners();
+    final data = await api.updateUser(username, password, fullname, phone_number, email, bio, _errorStream);
+    if (data != null) {
+      // PrefUtils.setUser(data);
+      _loginConfirmStream.sink.add(data);
+    }
+    progressData = false;
+    notifyListeners();
+  }
+
+  void getUser() async {
+    progressData = true;
+    notifyListeners();
+    final data = await api.getUser(_errorStream);
+    progressData = false;
+    notifyListeners();
+    if (data != null) {
+      _userStream.sink.add(data);
+    }
   }
 
   // //news
@@ -60,6 +114,18 @@ class MainViewModel extends BaseViewModel {
     notifyListeners();
     final data = await api.getNews(_errorStream);
     newsList = data;
+    progressData = false;
+    notifyListeners();
+  }
+
+  void getClinicLOcations() async {
+    progressData = true;
+    notifyListeners();
+    final data = await api.getClinicLOcations(_errorStream);
+    clinicaList = data;
+    if (data != null) {
+      _locationListStream.sink.add(data);
+    }
     progressData = false;
     notifyListeners();
   }
@@ -74,7 +140,11 @@ class MainViewModel extends BaseViewModel {
   }
 
   void sendReport(
-      String title, String text, int report_id, String image, ) async {
+    String title,
+    String text,
+    int report_id,
+    String image,
+  ) async {
     progressData = true;
     notifyListeners();
     final data = await api.sendReport(title, text, report_id, image, _errorStream);
@@ -84,6 +154,7 @@ class MainViewModel extends BaseViewModel {
       _sendReportStream.sink.add(data);
     }
   }
+
   //
   //
   // void resetPassword(String phone) async {
@@ -134,8 +205,6 @@ class MainViewModel extends BaseViewModel {
 //     notifyListeners();
 //   }
 
-
-
   // StreamController<bool> _sendRequestStream = StreamController();
   // Stream<bool> get sendRequestData {
   //   return _sendRequestStream.stream;
@@ -164,7 +233,6 @@ class MainViewModel extends BaseViewModel {
   //
   // List<ChatModel> chatList = [];
 
-
   // void sendRequest(
   //     String project_id, String title, String comment, int prioritet, String image, String voice) async {
   //   progressData = true;
@@ -177,8 +245,6 @@ class MainViewModel extends BaseViewModel {
   //   }
   // }
 
-
-
   // void sendMessage(String message, String chat_id) async {
   //   progressData = true;
   //   notifyListeners();
@@ -189,9 +255,6 @@ class MainViewModel extends BaseViewModel {
   //     _sendMessageStream.sink.add(data);
   //   }
   // }
-
-
-
 
   @override
   void dispose() {

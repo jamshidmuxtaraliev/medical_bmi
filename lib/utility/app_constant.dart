@@ -26,6 +26,7 @@ const COLOR_GOOGLE = "#FC5345";
 
 final BASE_URL = "http://91.213.99.105:3010/api/v1/";
 const IMAGE_BASE_URL = "http://91.213.99.105:3010/api/image/";
+const CLINIC_BASE_URL = "http://91.213.99.105:3010/api/clinic/";
 
 const BUTTON_PROCEED = "PROCEED";
 const BUTTON_GOAHEAD = "GO AHEAD";
@@ -94,3 +95,6 @@ const Color DARK_CART_LIGHT = Color(0xFF585858);
 const Color DARK_CART_DARK = Color(0xFF373737);
 const Color GREY_TEXT_COLOR = Color(0xFF9098B1);
 const Color LIGHT_RED_COLOR = Color(0xFFE4B8BC);
+
+const Color TEXT_COLOR = Color(0xFF8C8BB6);
+const Color  TEXT_COLOR2 = Color(0xFF33334F);

@@ -3,9 +3,16 @@ class Assets {
   Assets._();
 
   static const String imagesAppointment = 'assets/images/appointment.png';
+  static const String imagesAs = 'assets/images/as.png';
+  static const String imagesBg = 'assets/images/bg.png';
   static const String imagesDoctor = 'assets/images/doctor.jpg';
+  static const String imagesElement = 'assets/images/element.png';
+  static const String imagesEmailIcon = 'assets/images/email_icon.png';
   static const String imagesGallery = 'assets/images/gallery.png';
+  static const String imagesHospital = 'assets/images/hospital.png';
   static const String imagesImageIcon = 'assets/images/image_icon.png';
+  static const String imagesLoader = 'assets/images/loader.png';
+  static const String imagesProfile = 'assets/images/profile.png';
   static const String imagesReminder = 'assets/images/reminder.png';
   static const String imagesReports = 'assets/images/reports.png';
   static const String imagesSes = 'assets/images/ses.png';

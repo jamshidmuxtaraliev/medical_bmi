@@ -84,8 +84,8 @@ class _SendReportScreenState extends State<SendReportScreen> {
                     controller: commentController,
                     minLines: 7,
                     maxLines: 7,
-                    style: const TextStyle(color: Colors.black),
                     keyboardType: TextInputType.multiline,
+                    style: const TextStyle(color: Colors.black),
                     decoration: InputDecoration(
                       hintText: "Hisobot to'liq matni...",
                       hintStyle: const TextStyle(color: Colors.grey),

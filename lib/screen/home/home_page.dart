@@ -1,8 +1,23 @@
+import 'package:cherry_toast/cherry_toast.dart';
+import 'package:cherry_toast/resources/arrays.dart';
+import 'package:dialogs/dialogs/choice_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_share/flutter_share.dart';
+import 'package:medical_bmi/api/main_viewmodel.dart';
+import 'package:medical_bmi/screen/covid%20app/uzbekistan.dart';
+import 'package:medical_bmi/screen/map/map_screen.dart';
 import 'package:medical_bmi/screen/news/news_screen.dart';
+import 'package:medical_bmi/screen/profile/profile_screen.dart';
 import 'package:medical_bmi/screen/reports/report_screen.dart';
+import 'package:medical_bmi/screen/settings_screen.dart';
 import 'package:medical_bmi/utility/pref_utils.dart';
+import 'package:stacked/stacked.dart';
+import '../../utility/app_constant.dart';
+import '../splash/splash_screen.dart';
 import 'home_animation.dart';
+import 'my_drawer_header.dart';
+import '../../utility/color_utility.dart';
+import 'package:url_launcher/url_launcher.dart' as UrlLauncher;
 
 class HomePage extends StatefulWidget {
   @override
@@ -37,20 +52,50 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
     final Size size = MediaQuery.of(context).size;
     final TextTheme textTheme = Theme.of(context).textTheme;
 
-    return Scaffold(
-        body: AnimatedBuilder(
-            animation: animationController,
-            builder: (context, child) {
-              return Stack(
-                fit: StackFit.expand,
-                children: <Widget>[
-                  _buildBackgroundImage(size),
-                  _buildBackgroundGradient(size),
-                  _buildCard(size, textTheme),
-                ],
-              );
-            }));
+    return ViewModelBuilder<MainViewModel>.reactive(
+      viewModelBuilder: () {
+        return MainViewModel();
+      },
+      builder: (BuildContext context, MainViewModel viewModel, Widget? child) {
+        return Scaffold(
+          body: AnimatedBuilder(
+              animation: animationController,
+              builder: (context, child) {
+                return Stack(
+                  fit: StackFit.expand,
+                  children: <Widget>[
+                    _buildBackgroundImage(size),
+                    _buildBackgroundGradient(size),
+                    _buildCard(size, textTheme),
+                  ],
+                );
+              }),
+        );
+      },
+      onViewModelReady: (viewmodel) {
+        viewmodel.getUser();
+
+        viewmodel.errorData.listen((event) {
+          viewmodel.errorData.listen((event) {
+            CherryToast.error(
+              title: const Text('Error'),
+              enableIconAnimation: false,
+              displayTitle: false,
+              description: Text(event),
+              animationType: AnimationType.fromTop,
+              animationDuration: const Duration(milliseconds: 1000),
+              autoDismiss: true,
+            ).show(context);
+          });
+        });
+
+        viewmodel.getUserData.listen((event) {
+          PrefUtils.setUser(event);
+        });
+      },
+    );
   }
+
 
   _buildBackgroundImage(Size size) => Positioned(
         top: 0,
@@ -105,14 +150,42 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text(
-                      "Hello ${PrefUtils.getUser()?.username}",
-                      style: textTheme.bodySmall?.copyWith(color: Colors.black, fontWeight: FontWeight.w300),
-                    ),
-                    Text(
-                      "Welcome",
-                      style:
-                          textTheme.titleMedium?.copyWith(color: Colors.black, fontWeight: FontWeight.w700),
+                    Row(
+                      children: [
+                        InkWell(
+                            onTap: () {
+                              startScreenF(context, const MapScreen());
+                              // showSuccess(context, "Menu");
+                            },
+                            child: const Icon(
+                              Icons.location_on_outlined,
+                              color: Colors.red,
+                            )),
+                        Expanded(
+                            child: Column(
+                          children: [
+                            Text(
+                              "Hello ${PrefUtils.getUser()?.username}",
+                              style: textTheme.bodySmall
+                                  ?.copyWith(color: Colors.black, fontWeight: FontWeight.w300),
+                            ),
+                            Text(
+                              "Welcome",
+                              style: textTheme.titleMedium
+                                  ?.copyWith(color: Colors.black, fontWeight: FontWeight.w700),
+                            ),
+                          ],
+                        )),
+                        InkWell(
+                            onTap: () {
+                              startScreenF(context, SettingsScreen());
+                              // showSuccess(context, "Menu");
+                            },
+                            child: const Icon(
+                              Icons.settings,
+                              color: Colors.green,
+                            ))
+                      ],
                     ),
                     const SizedBox(
                       height: 16,
@@ -162,11 +235,18 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
             ],
           ),
         ),
-    onTap: (){
-          Navigator.push(context, MaterialPageRoute(builder: (context)=>
-          (menu.clickType ==1) ? NewsScreen() : ReportScreen()
-          ));
-    },
+        onTap: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => (menu.clickType == 1)
+                      ? NewsScreen()
+                      : (menu.clickType == 2)
+                          ? Pakistan()
+                          : (menu.clickType == 3)
+                              ? ReportScreen()
+                              : ProfileScreen()));
+        },
       );
 }
 
@@ -180,7 +260,7 @@ class Menu {
 
 final menuItems = <Menu>[
   Menu(title: "Yangiliklar va elonlar", image: 'assets/images/appointment.png', clickType: 1),
-  Menu(title: "Your appointment", image: 'assets/images/reminder.png', clickType: 2),
-  Menu(title: "Medical report", image: 'assets/images/reports.png', clickType: 3),
-  Menu(title: "Set medical reminder", image: 'assets/images/yourappointments.png', clickType: 4),
+  Menu(title: "Epidemiologik malumot", image: 'assets/images/reminder.png', clickType: 2),
+  Menu(title: "Hisobot topshirish", image: 'assets/images/reports.png', clickType: 3),
+  Menu(title: "Shaxsiy malumotlar", image: 'assets/images/element.png', clickType: 4),
 ];
