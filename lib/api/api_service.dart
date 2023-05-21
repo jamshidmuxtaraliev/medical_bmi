@@ -11,6 +11,7 @@ import '../models/clinica_location_model.dart';
 import '../models/event_model.dart';
 import '../models/login_response.dart';
 import '../models/news_model.dart';
+import '../models/report_have_model.dart';
 import '../models/report_model.dart';
 import '../utility/event_bus_provider.dart';
 import '../utility/pref_utils.dart';
@@ -201,7 +202,7 @@ class ApiService {
   }
 
   Future<bool?> sendReport(
-      String title, String text, int reportId, String image, StreamController<String> errorStream) async {
+      String title, String text, int reportId, String image, String image2, String image3, StreamController<String> errorStream) async {
     try {
       final response = await dio.post("report/table",
           data: FormData.fromMap({
@@ -210,6 +211,10 @@ class ApiService {
             "report_id": reportId,
             if (image.isNotEmpty)
               "image": await MultipartFile.fromFile(image, filename: image.split('/').last),
+            if (image2.isNotEmpty)
+              "image": await MultipartFile.fromFile(image2, filename: image.split('/').last),
+            if (image3.isNotEmpty)
+              "image": await MultipartFile.fromFile(image3, filename: image.split('/').last),
           }));
       final baseData = wrapResponse(response);
       if (baseData.success) {
@@ -221,6 +226,21 @@ class ApiService {
       errorStream.sink.add(wrapError(e));
     }
     return false;
+  }
+
+  Future<ReportHaveModel?> isYesReport(int id, StreamController<String> errorStream) async {
+    try {
+      final response = await dio.get("report/table/change/${id}",);
+      final baseData = wrapResponse(response);
+      if (baseData.success && ReportHaveModel.fromJson(baseData.data).id != null) {
+        return ReportHaveModel.fromJson(baseData.data);
+      } else {
+        return null;
+      }
+    } on DioError catch (e) {
+      errorStream.sink.add(wrapError(e));
+    }
+    return null;
   }
 
 }

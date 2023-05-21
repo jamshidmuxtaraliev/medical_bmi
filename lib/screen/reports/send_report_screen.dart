@@ -8,6 +8,7 @@ import 'package:medical_bmi/api/main_viewmodel.dart';
 import 'package:medical_bmi/models/report_model.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:medical_bmi/utility/color_utility.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:stacked/stacked.dart';
 
@@ -15,6 +16,7 @@ import '../home/home_page.dart';
 
 class SendReportScreen extends StatefulWidget {
   ReportModel currentReport;
+
   SendReportScreen({Key? key, required this.currentReport}) : super(key: key);
 
   @override
@@ -31,203 +33,252 @@ class _SendReportScreenState extends State<SendReportScreen> {
   var commentController = TextEditingController();
   var titleController = TextEditingController();
 
+  bool isReport = false;
+
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<MainViewModel>.reactive(
-      viewModelBuilder: () { return MainViewModel(); },
+      viewModelBuilder: () {
+        return MainViewModel();
+      },
       builder: (BuildContext context, MainViewModel viewModel, Widget? child) {
-        return Scaffold(
-          appBar: AppBar(
-            backgroundColor: Color(0xFF40858B),
-            title: Text("Hisobot yuborish"),
-          ),
-          body: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("Topshiriq:", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
-                  SizedBox(height: 8,),
-                  Text(widget.currentReport.text??"Yangi topshiriq", style: TextStyle(fontSize: 20),),
-                  SizedBox(height: 20,),
-                  Text("Hisobotni shakllantiring :", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
-                  SizedBox(height: 8,),
-                  TextField(
-                    controller: titleController,
-                    textInputAction: TextInputAction.next,
-                    textAlignVertical: TextAlignVertical.center,
-                    keyboardType: TextInputType.name,
-                    style: const TextStyle(fontSize: 16, fontFamily: "regular", color: Colors.black),
-                    maxLines: 1,
-                    onChanged: (text) {
-                      setState(() {
-                        activeButton = getActiveButton();
-                      });
-                    },
-                    decoration: InputDecoration(
-                      contentPadding: EdgeInsets.only(left: 8,right: 8),
-                      border: myInputBorder(1),
-                      //normal border
-                      enabledBorder: myInputBorder(1),
-                      //enabled border
-                      focusedBorder: myInputBorder(2),
-                      filled: true,
-                      hintStyle: const TextStyle(color: Colors.grey),
-                      hintText: "Sarlavha matni",
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                  TextFormField(
-                    controller: commentController,
-                    minLines: 7,
-                    maxLines: 7,
-                    keyboardType: TextInputType.multiline,
-                    style: const TextStyle(color: Colors.black),
-                    decoration: InputDecoration(
-                      hintText: "Hisobot to'liq matni...",
-                      hintStyle: const TextStyle(color: Colors.grey),
-                      border: myInputBorder(1),
-                      //normal border
-                      enabledBorder: myInputBorder(1),
-                      //enabled border
-                      focusedBorder: myInputBorder(2),
-                    ),
-                    onChanged: (value){
-                      setState(() {
-                        activeButton = getActiveButton();
-                      });
-                    },
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+        return Stack(
+          children: [
+            Scaffold(
+              appBar: AppBar(
+                backgroundColor: Color(0xFF40858B),
+                title: Text("Hisobot yuborish"),
+              ),
+              body: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      InkWell(
-                        onTap: () {
-                          showImageDialog(1);
-                        },
-                        child: Container(
-                            width: 100,
-                            height: 100,
-                            decoration: BoxDecoration(
-                                color: Colors.grey,
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(color: Colors.green, width: 1)),
-                            child: imagePath.isNotEmpty
-                                ? ClipRRect(
-                                borderRadius: BorderRadius.circular(8),
-                                child: Image.file(
-                                  File(imagePath),
-                                  fit: BoxFit.cover,
-                                ))
-                                : Center(
-                                child: Image.asset(
-                                  "assets/images/gallery.png",
-                                  height: 64,
-                                  width: 64,
-                                ))),
+                      Text(
+                        "Topshiriq:",
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                       ),
-                      InkWell(
-                        onTap: () {
-                          showImageDialog(2);
-                        },
-                        child: Container(
-                            width: 100,
-                            height: 100,
-                            decoration: BoxDecoration(
-                                color: Colors.grey,
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(color: Colors.green, width: 1)),
-                            child: imagePath2.isNotEmpty
-                                ? ClipRRect(
-                                borderRadius: BorderRadius.circular(8),
-                                child: Image.file(
-                                  File(imagePath2),
-                                  fit: BoxFit.cover,
-                                ))
-                                : Center(
-                                child: Image.asset(
-                                  "assets/images/gallery.png",
-                                  height: 64,
-                                  width: 64,
-                                ))),
+                      SizedBox(
+                        height: 8,
                       ),
-                      InkWell(
-                        onTap: () {
-                          showImageDialog(3);
-                        },
-                        child: Container(
-                            width: 100,
-                            height: 100,
-                            decoration: BoxDecoration(
-                                color: Colors.grey,
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(color: Colors.green, width: 1)),
-                            child: imagePath3.isNotEmpty
-                                ? ClipRRect(
-                                borderRadius: BorderRadius.circular(8),
-                                child: Image.file(
-                                  File(imagePath3),
-                                  fit: BoxFit.cover,
-                                ))
-                                : Center(
-                                child: Image.asset(
-                                  "assets/images/gallery.png",
-                                  height: 64,
-                                  width: 64,
-                                ))),
-                      )
+                      Text(
+                        widget.currentReport.text ?? "Yangi topshiriq",
+                        style: TextStyle(fontSize: 20),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Text(
+                        (isReport == false) ? "Hisobotni shakllantiring :" : "",
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(
+                        height: 8,
+                      ),
+                      if (isReport == false)
+                        Column(
+                          children: [
+                            TextField(
+                              controller: titleController,
+                              textInputAction: TextInputAction.next,
+                              textAlignVertical: TextAlignVertical.center,
+                              keyboardType: TextInputType.name,
+                              style:
+                                  const TextStyle(fontSize: 16, fontFamily: "regular", color: Colors.black),
+                              maxLines: 1,
+                              onChanged: (text) {
+                                setState(() {
+                                  activeButton = getActiveButton();
+                                });
+                              },
+                              decoration: InputDecoration(
+                                contentPadding: EdgeInsets.only(left: 8, right: 8),
+                                border: myInputBorder(1),
+                                //normal border
+                                enabledBorder: myInputBorder(1),
+                                //enabled border
+                                focusedBorder: myInputBorder(2),
+                                filled: true,
+                                hintStyle: const TextStyle(color: Colors.grey),
+                                hintText: "Sarlavha matni",
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 16,
+                            ),
+                            TextFormField(
+                              controller: commentController,
+                              minLines: 7,
+                              maxLines: 7,
+                              keyboardType: TextInputType.multiline,
+                              style: const TextStyle(color: Colors.black),
+                              decoration: InputDecoration(
+                                hintText: "Hisobot to'liq matni...",
+                                hintStyle: const TextStyle(color: Colors.grey),
+                                border: myInputBorder(1),
+                                //normal border
+                                enabledBorder: myInputBorder(1),
+                                //enabled border
+                                focusedBorder: myInputBorder(2),
+                              ),
+                              onChanged: (value) {
+                                setState(() {
+                                  activeButton = getActiveButton();
+                                });
+                              },
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                InkWell(
+                                  onTap: () {
+                                    showImageDialog(1);
+                                  },
+                                  child: Container(
+                                      width: 100,
+                                      height: 100,
+                                      decoration: BoxDecoration(
+                                          color: Colors.grey,
+                                          borderRadius: BorderRadius.circular(8),
+                                          border: Border.all(color: Colors.green, width: 1)),
+                                      child: imagePath.isNotEmpty
+                                          ? ClipRRect(
+                                              borderRadius: BorderRadius.circular(8),
+                                              child: Image.file(
+                                                File(imagePath),
+                                                fit: BoxFit.cover,
+                                              ))
+                                          : Center(
+                                              child: Image.asset(
+                                              "assets/images/gallery.png",
+                                              height: 64,
+                                              width: 64,
+                                            ))),
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    showImageDialog(2);
+                                  },
+                                  child: Container(
+                                      width: 100,
+                                      height: 100,
+                                      decoration: BoxDecoration(
+                                          color: Colors.grey,
+                                          borderRadius: BorderRadius.circular(8),
+                                          border: Border.all(color: Colors.green, width: 1)),
+                                      child: imagePath2.isNotEmpty
+                                          ? ClipRRect(
+                                              borderRadius: BorderRadius.circular(8),
+                                              child: Image.file(
+                                                File(imagePath2),
+                                                fit: BoxFit.cover,
+                                              ))
+                                          : Center(
+                                              child: Image.asset(
+                                              "assets/images/gallery.png",
+                                              height: 64,
+                                              width: 64,
+                                            ))),
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    showImageDialog(3);
+                                  },
+                                  child: Container(
+                                      width: 100,
+                                      height: 100,
+                                      decoration: BoxDecoration(
+                                          color: Colors.grey,
+                                          borderRadius: BorderRadius.circular(8),
+                                          border: Border.all(color: Colors.green, width: 1)),
+                                      child: imagePath3.isNotEmpty
+                                          ? ClipRRect(
+                                              borderRadius: BorderRadius.circular(8),
+                                              child: Image.file(
+                                                File(imagePath3),
+                                                fit: BoxFit.cover,
+                                              ))
+                                          : Center(
+                                              child: Image.asset(
+                                              "assets/images/gallery.png",
+                                              height: 64,
+                                              width: 64,
+                                            ))),
+                                )
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            viewModel.progressData
+                                ? const Center(
+                                    child: CircularProgressIndicator(),
+                                  )
+                                : SizedBox(
+                                    height: 55,
+                                    width: double.infinity,
+                                    child: ElevatedButton(
+                                        style: ButtonStyle(
+                                          backgroundColor: MaterialStateProperty.all(
+                                              !activeButton ? Colors.grey : Color(0xFF5DB09E)),
+                                        ),
+                                        onPressed: () {
+                                          viewModel.sendReport(
+                                            titleController.text,
+                                            commentController.text,
+                                            widget.currentReport.id,
+                                            imagePath,
+                                            imagePath2,
+                                            imagePath3,
+                                          );
+                                          // if (activeButton) {
+                                          //   viewModel.sendReport(
+                                          //       titleController.text,
+                                          //       commentController.text,
+                                          //       widget.currentReport.id,
+                                          //       imagePath,);
+                                          // } else {
+                                          //   ScaffoldMessenger.maybeOf(context)
+                                          //       ?.showSnackBar(SnackBar(content: Text("Barcha malumotlarni to'ldiring")));
+                                          // }
+                                        },
+                                        child: const Text(
+                                          "Yuborish",
+                                          style: TextStyle(color: Colors.white),
+                                        )),
+                                  ),
+                          ],
+                        ),
+                      if (isReport == true)
+                        const SizedBox(
+                          height: 200,
+                          child: Text(
+                            "Siz allaqachon hisobotni yuklagansiz !",
+                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
+                        )
                     ],
                   ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  viewModel.progressData
-                      ? const Center(
-                    child: CircularProgressIndicator(),
-                  )
-                      : SizedBox(
-                    height: 55,
-                    width: double.infinity,
-                    child: ElevatedButton(
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all(
-                              !activeButton ? Colors.grey : Color(0xFF5DB09E)),
-                        ),
-                        onPressed: () {
-                          viewModel.sendReport(
-                            titleController.text,
-                            commentController.text,
-                            widget.currentReport.id,
-                            imagePath,);
-                          // if (activeButton) {
-                          //   viewModel.sendReport(
-                          //       titleController.text,
-                          //       commentController.text,
-                          //       widget.currentReport.id,
-                          //       imagePath,);
-                          // } else {
-                          //   ScaffoldMessenger.maybeOf(context)
-                          //       ?.showSnackBar(SnackBar(content: Text("Barcha malumotlarni to'ldiring")));
-                          // }
-                        },
-                        child: Text(
-                          "Yuborish",
-                          style: TextStyle(color: Colors.white),
-                        )),
-                  ),
-                ],
+                ),
               ),
             ),
-          ),
+            if (viewModel.progressData) showMyProgress()
+          ],
         );
       },
-      onViewModelReady: (viewModel){
+      onViewModelReady: (viewModel) {
+        viewModel.isYesReport(widget.currentReport.id);
+
+        viewModel.yesReportData.listen((event) {
+          setState(() {
+            isReport = (event.id!=null);
+          });
+        });
+
         viewModel.errorData.listen((event) {
           CherryToast.error(
             title: const Text('Error'),
@@ -278,11 +329,11 @@ class _SendReportScreenState extends State<SendReportScreen> {
                 );
                 if (croppedFile != null) {
                   setState(() {
-                    if (type==1) {
+                    if (type == 1) {
                       imagePath = croppedFile.path;
-                    }  else if(type==2){
+                    } else if (type == 2) {
                       imagePath2 = croppedFile.path;
-                    }else{
+                    } else {
                       imagePath3 = croppedFile.path;
                     }
                   });
@@ -310,11 +361,11 @@ class _SendReportScreenState extends State<SendReportScreen> {
                 // final size = (await croppedFile.length()) / 1024 / 1024;
                 setState(() {
                   setState(() {
-                    if (type==1) {
+                    if (type == 1) {
                       imagePath = croppedFile.path;
-                    }  else if(type==2){
+                    } else if (type == 2) {
                       imagePath2 = croppedFile.path;
-                    }else{
+                    } else {
                       imagePath3 = croppedFile.path;
                     }
                   });
@@ -330,13 +381,13 @@ class _SendReportScreenState extends State<SendReportScreen> {
   }
 
   bool getActiveButton() {
-    return (titleController.text.length > 3 && commentController.text.length > 3 );
+    return (titleController.text.length > 3 && commentController.text.length > 3);
   }
 
   OutlineInputBorder myInputBorder(int type) {
     //return type is OutlineInputBorder
     return OutlineInputBorder(
-      //Outline border type for TextFeild
+        //Outline border type for TextFeild
         borderRadius: BorderRadius.all(Radius.circular(12)),
         borderSide: BorderSide(
           color: (type == 1) ? Colors.blueGrey : Colors.lightBlueAccent,

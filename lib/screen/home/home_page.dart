@@ -152,17 +152,9 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   children: <Widget>[
                     Row(
                       children: [
-                        InkWell(
-                            onTap: () {
-                              startScreenF(context, const MapScreen());
-                              // showSuccess(context, "Menu");
-                            },
-                            child: const Icon(
-                              Icons.location_on_outlined,
-                              color: Colors.red,
-                            )),
                         Expanded(
                             child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               "Hello ${PrefUtils.getUser()?.username}",
@@ -176,6 +168,16 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                             ),
                           ],
                         )),
+                        InkWell(
+                            onTap: () {
+                              startScreenF(context, const MapScreen());
+                              // showSuccess(context, "Menu");
+                            },
+                            child: const Icon(
+                              Icons.location_on_outlined,
+                              color: Colors.green,
+                            )),
+                        const SizedBox(width: 8,),
                         InkWell(
                             onTap: () {
                               startScreenF(context, SettingsScreen());

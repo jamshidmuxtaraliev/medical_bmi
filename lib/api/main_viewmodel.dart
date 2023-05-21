@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:medical_bmi/api/covidAPI.dart';
 import 'package:medical_bmi/models/clinica_location_model.dart';
 import 'package:medical_bmi/models/news_model.dart';
+import 'package:medical_bmi/models/report_have_model.dart';
 import 'package:medical_bmi/models/report_model.dart';
 import 'package:stacked/stacked.dart';
 import '../api/api_service.dart';
@@ -35,9 +36,13 @@ class MainViewModel extends BaseViewModel {
   }
 
   StreamController<bool> _sendReportStream = StreamController();
-
   Stream<bool> get sendReportData {
     return _sendReportStream.stream;
+  }
+
+  StreamController<ReportHaveModel> _yesReportStream = StreamController();
+  Stream<ReportHaveModel> get yesReportData {
+    return _yesReportStream.stream;
   }
 
   Stream<String> get errorData {
@@ -144,14 +149,29 @@ class MainViewModel extends BaseViewModel {
     String text,
     int report_id,
     String image,
+    String image2,
+    String image3,
   ) async {
     progressData = true;
     notifyListeners();
-    final data = await api.sendReport(title, text, report_id, image, _errorStream);
+    final data = await api.sendReport(title, text, report_id, image, image2, image3, _errorStream);
     progressData = false;
     notifyListeners();
     if (data != null) {
       _sendReportStream.sink.add(data);
+    }
+  }
+
+  void isYesReport(
+    int id
+  ) async {
+    progressData = true;
+    notifyListeners();
+    final data = await api.isYesReport(id, _errorStream);
+    progressData = false;
+    notifyListeners();
+    if (data != null) {
+      _yesReportStream.sink.add(data);
     }
   }
 
