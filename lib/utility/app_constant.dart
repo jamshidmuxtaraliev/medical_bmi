@@ -24,9 +24,9 @@ const COLOR_FACEBOOK = "#4C76BE";
 const COLOR_TWITTER = "#00C7FF";
 const COLOR_GOOGLE = "#FC5345";
 
-final BASE_URL = "http://91.213.99.105:3010/api/v1/";
-const IMAGE_BASE_URL = "http://91.213.99.105:3010/api/image/";
-const CLINIC_BASE_URL = "http://91.213.99.105:3010/api/clinic/";
+final BASE_URL = "";
+const IMAGE_BASE_URL = "";
+const CLINIC_BASE_URL = "";
 
 const BUTTON_PROCEED = "PROCEED";
 const BUTTON_GOAHEAD = "GO AHEAD";
